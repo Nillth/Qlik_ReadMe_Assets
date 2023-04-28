@@ -53,6 +53,7 @@ jobs:
           name: ${{ github.event.repository.name }}-Readme
           path: out
       - name: upload file
+        if: success()
         run: |
-          gh release upload $GITHUB_REF out/README.pdf
+          gh release create $GITHUB_REF out/README.pdf
 
