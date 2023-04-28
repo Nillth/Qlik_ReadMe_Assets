@@ -53,7 +53,7 @@ jobs:
 
           #Get the MD File list
           $MDFiles = Get-ChildItem -recurse -filter "*.md"
-          $MDFileList = $($MDFiles|%{"`"$(Resolve-Path -Relative $_.FullName})`"")-join " "
+          $MDFileList = $($MDFiles|%{"`"$(Resolve-Path -Relative $_.FullName)`""})-join " "
 
           #Set the Output Variables
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
