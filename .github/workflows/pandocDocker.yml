@@ -27,7 +27,6 @@ jobs:
         shell: pwsh
         run: |
           $RepositoryURI = "$($Env:GITHUB_API_URL)/repos/$($Env:GITHUB_REPOSITORY)"
-          "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
           try{$RepositoryInfo = Invoke-RestMethod $RepositoryURI -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
           try{$RepositoryOwnerInfo = Invoke-RestMethod $RepositoryInfo.owner.url -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
           try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
@@ -35,10 +34,13 @@ jobs:
           try {$Version = [version]::new(($Tag).substring(1));}catch{$Version = [version]::new('0.0.0.0');}
           $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
-          "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
           "title=${{ github.event.repository.name }} - ReadMe" >> $ENV:GITHUB_OUTPUT
           "author=${{github.server_url}}/${{github.repository}}" >> $ENV:GITHUB_OUTPUT
           "readmeZip=${{ github.event.repository.name }}-Readme" >> $ENV:GITHUB_OUTPUT
+          "#### Details ``$($RepositoryInfo|Convertto-json)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
+
       - name: Create folder
         run: |
           mkdir -p out
