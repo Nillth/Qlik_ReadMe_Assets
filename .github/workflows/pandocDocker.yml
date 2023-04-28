@@ -32,9 +32,10 @@ jobs:
           $CSS = "https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/theme/qlik.css"
           [System.IO.DirectoryInfo]$Temp = "./TempAssets"
           $Temp.Create()
-          $LTitlePageGraphic = "$($Temp.FullName)/$($($TitlePageGraphic -split("/"))[-1])"
-          $LLogo = "$($Temp.FullName)/$($($Logo -split("/"))[-1])"
-          $LCSS = "$($Temp.FullName)/$($($CSS -split("/"))[-1])"
+          $TempRelative = Resolve-Path -Relative $Temp
+          $LTitlePageGraphic = "$($TempRelative)/$($($TitlePageGraphic -split("/"))[-1])"
+          $LLogo = "$($TempRelative)/$($($Logo -split("/"))[-1])"
+          $LCSS = "$($TempRelative)/$($($CSS -split("/"))[-1])"
           try{
           Invoke-RestMethod $TitlePageGraphic -OutFile $LTitlePageGraphic
           Invoke-RestMethod $Logo -OutFile $LLogo
