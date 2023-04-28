@@ -66,7 +66,7 @@ jobs:
             -V titlepage-text-color=009845 
             -V titlepage-logo=docs/images/Qlik-Logo_RGB.png
             -V titlepage-background=docs/images/TitlePage.png
-            --metadata title=$"{{ steps.pwsh-versioning.outputs.title }}"
+            --metadata title="${{ steps.pwsh-versioning.outputs.title }}"
             --metadata author="${{ steps.pwsh-versioning.outputs.author }}"
       - uses: actions/upload-artifact@v1
         name: Upload Artifacts  
