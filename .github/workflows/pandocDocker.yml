@@ -77,5 +77,5 @@ jobs:
       - name: upload file
         if: success()
         run: |
-          gh release create --draft --generate-notes ${{ steps.pwsh-versioning.outputs.Version }} out/README.pdf
+          gh release create --draft --generate-notes --title ${{ steps.pwsh-versioning.outputs.Version }} out/*.*
 
