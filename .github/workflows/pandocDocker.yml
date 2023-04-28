@@ -27,8 +27,9 @@ jobs:
         shell: pwsh
         run: |
           $RepositoryURI = "$($Env:GITHUB_API_URL)/repos/$($Env:GITHUB_REPOSITORY)"
-          $RepositoryInfo = Invoke-RestMethod $RepositoryURI -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}
-          $RepositoryOwnerInfo = Invoke-RestMethod $RepositoryInfo.owner.url -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}
+          "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
+          try{$RepositoryInfo = Invoke-RestMethod $RepositoryURI -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
+          try{$RepositoryOwnerInfo = Invoke-RestMethod $RepositoryInfo.owner.url -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
           try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
           if ($Null -eq $Tag) {$Tag = 'v0.0.0.0'}
           try {$Version = [version]::new(($Tag).substring(1));}catch{$Version = [version]::new('0.0.0.0');}
