@@ -25,7 +25,7 @@ jobs:
           args: >-  # allows you to break string into multiple lines
             --standalone
             --embed-resources
-            --css https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/theme/qlik.css 
+            --css docs/theme/qlik.css 
             --output=./out/ReadMe.html
             README.md
       - uses: docker://pandoc/extra:latest
@@ -40,8 +40,8 @@ jobs:
             -V lang=en-GB 
             -V titlepage 
             -V titlepage-text-color=009845 
-            -V titlepage-logo=https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/Qlik-Logo_RGB.png
-            -V titlepage-background=https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/TitlePage.png
+            -V titlepage-logo=docs/images/Qlik-Logo_RGB.png
+            -V titlepage-background=docs/images/TitlePage.png
             --metadata title="${{ github.event.repository.name }} - ReadMe" 
             --metadata author="${{github.server_url}}/${{github.repository}}"
       - uses: actions/upload-artifact@v1
