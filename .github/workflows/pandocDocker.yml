@@ -62,9 +62,20 @@ jobs:
           "MDFileList=$($MDFileList)" >> $ENV:GITHUB_OUTPUT
 
           #Update the status.
-          "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
-
+          "## Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
           "#### MDFilLeist ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### title ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### author ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### readmeZip ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
+          "### External URIs" >> $env:GITHUB_STEP_SUMMARY
+          "#### TitlePageGraphic ``$($TitlePageGraphic)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### Logo ``$($Logo)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### CSS ``$($CSS)``" >> $env:GITHUB_STEP_SUMMARY
+          "### Local Files" >> $env:GITHUB_STEP_SUMMARY
+          "#### TitlePageGraphic ``$($LTitlePageGraphic)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### Logo ``$($LLogo)``" >> $env:GITHUB_STEP_SUMMARY
+          "#### CSS ``$($LCSS)``" >> $env:GITHUB_STEP_SUMMARY
+
       - name: Create folder
         run: |
           mkdir -p out
