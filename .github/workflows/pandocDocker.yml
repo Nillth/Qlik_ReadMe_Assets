@@ -3,9 +3,9 @@ on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
     branches-ignore: [ '**-alpha', '**-dev' ]
-    paths-ignore:
-      - '.github/workflows/**'
-      - 'docs/**'
+    # paths-ignore:
+    #   - '.github/workflows/**'
+    #   - 'docs/**'
   pull_request:
     branches: [ "main" ]
 
