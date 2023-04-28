@@ -26,24 +26,44 @@ jobs:
         id: pwsh-versioning
         shell: pwsh
         run: |
-          $RepositoryURI = "$($Env:GITHUB_API_URL)/repos/$($Env:GITHUB_REPOSITORY)"
-          try{$RepositoryInfo = Invoke-RestMethod $RepositoryURI -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
-          try{$RepositoryOwnerInfo = Invoke-RestMethod $RepositoryInfo.owner.url -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}}catch{}
+          
+          $TitlePageGraphic = "https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/TitlePage.png"
+          $Logo = "https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/Qlik-Logo_RGB.png"
+          $CSS = "https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/theme/qlik.css"
+          [System.IO.DirectoryInfo]$Temp = "./TempAssets"
+          $Temp.Create()
+          $LTitlePageGraphic = "$($Temp.FullName)/$($($TitlePageGraphic -split("/"))[-1])"
+          $LLogo = "$($Temp.FullName)/$($($Logo -split("/"))[-1])"
+          $LCSS = "$($Temp.FullName)/$($($CSS -split("/"))[-1])"
+          Invoke-RestMethod $TitlePageGraphic -OutFile $LTitlePageGraphic
+          Invoke-RestMethod $Logo -OutFile $LLogo
+          Invoke-RestMethod $CSS -OutFile $LCSS
+          "TitlePageGraphic=$($LTitlePageGraphic)" >> $ENV:GITHUB_OUTPUT
+          "Logo=$($LLogo)" >> $ENV:GITHUB_OUTPUT
+          "CSS=$($LCSS))" >> $ENV:GITHUB_OUTPUT
+
+          #Set the Version Tag
           try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
           if ($Null -eq $Tag) {$Tag = 'v0.0.0.0'}
           try {$Version = [version]::new(($Tag).substring(1));}catch{$Version = [version]::new('0.0.0.0');}
+          $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
+
+          #Get the MD File list
           $MDFiles = Get-ChildItem -recurse -filter "*.md"
           $MDFileList = $MDFiles.FullName -join " "
 
-          $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
+          #Set the Output Variables
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
           "title=${{ github.event.repository.name }} - ReadMe" >> $ENV:GITHUB_OUTPUT
           "author=${{github.server_url}}/${{github.repository}}" >> $ENV:GITHUB_OUTPUT
           "readmeZip=${{ github.event.repository.name }}-Readme" >> $ENV:GITHUB_OUTPUT
+          "MDFileList=$($MDFileList)" >> $ENV:GITHUB_OUTPUT
+
+          #Update the status.
           "#### Details ``$($RepositoryInfo|Convertto-json)``" >> $env:GITHUB_STEP_SUMMARY
           "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
           "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
-          "MDFileList=$($MDFileList)" >> $ENV:GITHUB_OUTPUT
+
           "#### MDFilLeist ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
       - name: Create folder
         run: |
@@ -53,7 +73,7 @@ jobs:
           args: >-  # allows you to break string into multiple lines
             --standalone
             --embed-resources
-            --css docs/theme/qlik.css 
+            --css "${{ steps.pwsh-versioning.outputs.CSS }}"
             --output=./out/ReadMe.html
             README.md
       - uses: docker://pandoc/extra:latest
@@ -68,8 +88,8 @@ jobs:
             -V lang=en-GB 
             -V titlepage 
             -V titlepage-text-color=009845 
-            -V titlepage-logo=docs/images/Qlik-Logo_RGB.png
-            -V titlepage-background=docs/images/TitlePage.png
+            -V titlepage-logo="${{ steps.pwsh-versioning.outputs.Logo }}"
+            -V titlepage-background="${{ steps.pwsh-versioning.outputs.TitlePageGraphic }}"
             --metadata title="${{ steps.pwsh-versioning.outputs.title }}"
             --metadata author="${{ steps.pwsh-versioning.outputs.author }}"
       - uses: actions/upload-artifact@v1
