@@ -32,6 +32,9 @@ jobs:
           try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
           if ($Null -eq $Tag) {$Tag = 'v0.0.0.0'}
           try {$Version = [version]::new(($Tag).substring(1));}catch{$Version = [version]::new('0.0.0.0');}
+          $MDFiles = Get-ChildItem -recurse -filter "*.md"
+          $MDFileList = $MDFiles.FullName -join " "
+
           $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
           "title=${{ github.event.repository.name }} - ReadMe" >> $ENV:GITHUB_OUTPUT
@@ -40,7 +43,8 @@ jobs:
           "#### Details ``$($RepositoryInfo|Convertto-json)``" >> $env:GITHUB_STEP_SUMMARY
           "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
           "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
-
+          "MDFileList=$($MDFileList)" >> $ENV:GITHUB_OUTPUT
+          "#### MDFilLeist ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
       - name: Create folder
         run: |
           mkdir -p out
@@ -60,7 +64,7 @@ jobs:
             --template /.pandoc/templates/eisvogel.latex
             --listings
             -o ./out/README.pdf 
-            ./out/ReadMe.html
+            ${{ steps.pwsh-versioning.outputs.MDFilLeist }}
             -V lang=en-GB 
             -V titlepage 
             -V titlepage-text-color=009845 
