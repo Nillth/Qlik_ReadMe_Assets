@@ -1,0 +1,59 @@
+@media print {
+  body {
+    min-width: initial;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+}
+
+/* General */
+html * {
+  /* html *:not(code > span) { */
+  font-family: 'Source Sans Pro', Arial;
+}
+
+:root {
+  /* The Qlik Green */
+  --qlikGreen: #009845;
+
+  /* Supporting Colors */
+  --qlikSapphire: #005cB9;
+  --qlikEmerald: #006937;
+  --qlikRuby: #E7004C;
+  --qlikGrey: #54565A;
+
+  /* Highlight Colours */
+  --qlikCoral: #FF8E9F;
+  --qlikTopaz: #FFC72A;
+  --qlikPeridot: #C2D500;
+
+  /* Flood Colors */
+  --qlikTanzanite: #1C355E;
+  --qlikSlate: #244B5A;
+  --qlikTurquoise: #006580;
+  --qlikAquamarine: #10CFC9;
+  --qlikWine: #870064;
+  --qlikAmethyst: #655DC6;
+  --qlikStone: #C4CFDA;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--qlikGreen);
+}
+
+p {
+  color: var(--qlikGrey);
+}
+
+img {
+  box-shadow: 10px 10px 5px var(--qlikStone);
+  border: 1px solid var(--qlikSlate);
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
