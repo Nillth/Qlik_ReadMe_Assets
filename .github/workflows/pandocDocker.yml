@@ -22,6 +22,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - name: PowerShell Versioning Logic
+        id: pwsh-versioning
+        shell: pwsh
+        run: |
+          	$RepositoryURI = "$($Env:GITHUB_API_URL)/repos/$($Env:GITHUB_REPOSITORY)"
+            $RepositoryInfo = Invoke-RestMethod $RepositoryURI -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}
+            $RepositoryOwnerInfo = Invoke-RestMethod $RepositoryInfo.owner.url -ContentType 'application/json' -Headers @{Authorization = "Bearer $GH_TOKEN"}
+            try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
+           	if ($Null -eq $Tag) {$Tag = 'v0.0.0.0'}
+            try {$Version = [version]::new(($Tag).substring(1));}catch{$Version = [version]::new('0.0.0.0');}
+            $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
+            "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
+            "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
       - name: Create folder
         run: |
           mkdir -p out
@@ -58,5 +71,5 @@ jobs:
       - name: upload file
         if: success()
         run: |
-          gh release create $GITHUB_REF out/README.pdf
+          gh release create --draft --generate-notes ${{ steps.pwsh-versioning.outputs.Version }} out/README.pdf
 
