@@ -36,6 +36,9 @@ jobs:
           $ModuleVersion = [version]::new("$($Version.Major).$($Version.Minor).$("$([datetime]::utcnow.year)$([datetime]::UtcNow.DayOfYear)").$([datetime]::UtcNow.TimeOfDay.TotalSeconds.ToString('#'))")
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
           "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
+          "title=${{ github.event.repository.name }} - ReadMe" >> $ENV:GITHUB_OUTPUT
+          "author=${{github.server_url}}/${{github.repository}}" >> $ENV:GITHUB_OUTPUT
+          "readmeZip=${{ github.event.repository.name }}-Readme" >> $ENV:GITHUB_OUTPUT
       - name: Create folder
         run: |
           mkdir -p out
@@ -61,13 +64,13 @@ jobs:
             -V titlepage-text-color=009845 
             -V titlepage-logo=docs/images/Qlik-Logo_RGB.png
             -V titlepage-background=docs/images/TitlePage.png
-            --metadata title="${{ github.event.repository.name }} - ReadMe" 
-            --metadata author="${{github.server_url}}/${{github.repository}}"
+            --metadata title=${{ steps.pwsh-versioning.outputs.title }}
+            --metadata author=${{ steps.pwsh-versioning.outputs.author }}
       - uses: actions/upload-artifact@v1
         name: Upload Artifacts  
         if: success() || failure()
         with:
-          name: ${{ github.event.repository.name }}-Readme
+          name: ${{ steps.pwsh-versioning.outputs.readmeZip }}
           path: out
       - name: upload file
         if: success()
