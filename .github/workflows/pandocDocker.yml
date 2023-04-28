@@ -64,7 +64,7 @@ jobs:
 
           #Update the status.
           "## Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
-          "#### MDFilLeist ``${{ github.event.repository.name }} - ReadMe``" >> $env:GITHUB_STEP_SUMMARY
+          "#### MDFilLeist ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
           "#### title ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
           "#### author ``${{github.server_url}}/${{github.repository}}``" >> $env:GITHUB_STEP_SUMMARY
           "#### readmeZip ``${{ github.event.repository.name }}-Readme``" >> $env:GITHUB_STEP_SUMMARY
