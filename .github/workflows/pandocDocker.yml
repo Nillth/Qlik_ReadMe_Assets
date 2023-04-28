@@ -1,0 +1,53 @@
+name: ReadMe Documentation
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches-ignore: [ '**-alpha', '**-dev' ]
+    paths-ignore:
+      - '.github/workflows/**'
+      - 'docs/**'
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  convert_via_pandoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Create folder
+        run: |
+          mkdir -p out
+      - uses: docker://pandoc/extra:latest
+        with:
+          args: >-  # allows you to break string into multiple lines
+            --standalone
+            --embed-resources
+            --css https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/theme/qlik.css 
+            --output=./out/ReadMe.html
+            README.md
+      - uses: docker://pandoc/extra:latest
+        with:
+          args: >-  # allows you to break string into multiple lines 
+            --standalone
+            --embed-resources
+            --template /.pandoc/templates/eisvogel.latex
+            --listings
+            -o ./out/README.pdf 
+            ./out/ReadMe.html
+            -V lang=en-GB 
+            -V titlepage 
+            -V titlepage-text-color=009845 
+            -V titlepage-logo=https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/Qlik-Logo_RGB.png
+            -V titlepage-background=https://raw.githubusercontent.com/Nillth/Qlik_ReadMe_Assets/main/docs/images/TitlePage.png
+            --metadata title="${{ github.event.repository.name }} - ReadMe" 
+            --metadata author="${{github.server_url}}/${{github.repository}}"
+      - uses: actions/upload-artifact@v1
+        name: Upload Artifacts  
+        if: success() || failure()
+        with:
+          name: ${{ github.event.repository.name }}-Readme
+          path: out
+
