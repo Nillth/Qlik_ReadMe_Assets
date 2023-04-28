@@ -42,7 +42,7 @@ jobs:
           }catch{}
           "TitlePageGraphic=$($LTitlePageGraphic)" >> $ENV:GITHUB_OUTPUT
           "Logo=$($LLogo)" >> $ENV:GITHUB_OUTPUT
-          "CSS=$($LCSS))" >> $ENV:GITHUB_OUTPUT
+          "CSS=$($LCSS)" >> $ENV:GITHUB_OUTPUT
 
           #Set the Version Tag
           try {$Tag = $(git tag -l --sort=refname v* | Select-Object -Last 1)}catch{}
