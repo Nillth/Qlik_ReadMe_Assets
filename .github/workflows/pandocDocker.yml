@@ -35,9 +35,11 @@ jobs:
           $LTitlePageGraphic = "$($Temp.FullName)/$($($TitlePageGraphic -split("/"))[-1])"
           $LLogo = "$($Temp.FullName)/$($($Logo -split("/"))[-1])"
           $LCSS = "$($Temp.FullName)/$($($CSS -split("/"))[-1])"
+          try{
           Invoke-RestMethod $TitlePageGraphic -OutFile $LTitlePageGraphic
           Invoke-RestMethod $Logo -OutFile $LLogo
           Invoke-RestMethod $CSS -OutFile $LCSS
+          }catch{}
           "TitlePageGraphic=$($LTitlePageGraphic)" >> $ENV:GITHUB_OUTPUT
           "Logo=$($LLogo)" >> $ENV:GITHUB_OUTPUT
           "CSS=$($LCSS))" >> $ENV:GITHUB_OUTPUT
@@ -60,9 +62,7 @@ jobs:
           "MDFileList=$($MDFileList)" >> $ENV:GITHUB_OUTPUT
 
           #Update the status.
-          "#### Details ``$($RepositoryInfo|Convertto-json)``" >> $env:GITHUB_STEP_SUMMARY
           "#### Version ``$($ModuleVersion)``" >> $env:GITHUB_STEP_SUMMARY
-          "#### RepositoryURI ``$($RepositoryURI)``" >> $env:GITHUB_STEP_SUMMARY
 
           "#### MDFilLeist ``$($MDFileList)``" >> $env:GITHUB_STEP_SUMMARY
       - name: Create folder
