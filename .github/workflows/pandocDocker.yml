@@ -53,7 +53,7 @@ jobs:
 
           #Get the MD File list
           $MDFiles = Get-ChildItem -recurse -filter "*.md"
-          $MDFileList = $MDFiles.FullName -join " "
+          $MDFileList = $($MDFiles|%{"`"$(Resolve-Path -Relative $_.FullName})`"")-join " "
 
           #Set the Output Variables
           "Version=v$($ModuleVersion)" >> $ENV:GITHUB_OUTPUT
@@ -87,7 +87,9 @@ jobs:
             --embed-resources
             --css "${{ steps.pwsh-versioning.outputs.CSS }}"
             --output=./out/ReadMe.html
-            README.md
+            --metadata title="${{ steps.pwsh-versioning.outputs.title }}"
+            --metadata author="${{ steps.pwsh-versioning.outputs.author }}"
+            ${{ steps.pwsh-versioning.outputs.MDFilLeist }}
       - uses: docker://pandoc/extra:latest
         with:
           args: >-  # allows you to break string into multiple lines 
